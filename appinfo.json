@@ -1,0 +1,46 @@
+{
+    "appKeys": {
+        "KEY_CONDITIONS": 1,
+        "KEY_TEMPERATURE": 0
+    },
+    "capabilities": [
+        "location"
+    ],
+    "companyName": "FVCorporate",
+    "longName": "tutorial_watchface",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "fonts/perfect-dos-vga.ttf",
+                "name": "FONT_PERFECT_DOS_15",
+                "type": "font"
+            },
+            {
+                "file": "fonts/perfect-dos-vga.ttf",
+                "name": "FONT_PERFECT_DOS_48",
+                "type": "font"
+            },
+            {
+                "file": "fonts/perfect-dos-vga.ttf",
+                "name": "FONT_PERFECT_DOS_20",
+                "type": "font"
+            },
+            {
+                "file": "images/background.png",
+                "name": "IMAGE_BACKGROUND",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "tutorial_watchface",
+    "targetPlatforms": [
+        "basalt"
+    ],
+    "uuid": "fade8de0-e033-4188-9b45-7f594c6823b6",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
