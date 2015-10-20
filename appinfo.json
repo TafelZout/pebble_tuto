@@ -12,6 +12,11 @@
     "resources": {
         "media": [
             {
+                "file": "images/bt-icon.png",
+                "name": "IMAGE_BT_ICON",
+                "type": "png"
+            },
+            {
                 "file": "fonts/perfect-dos-vga.ttf",
                 "name": "FONT_PERFECT_DOS_15",
                 "type": "font"

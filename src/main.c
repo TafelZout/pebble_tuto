@@ -6,8 +6,8 @@
 static Window *s_main_window;
 static TextLayer *s_time_layer, *s_weather_layer, *s_date_layer;
 static GFont s_time_font, s_weather_font, s_date_font;
-static BitmapLayer *s_background_layer;
-static GBitmap *s_background_bitmap;
+static BitmapLayer *s_background_layer, *s_bt_icon_layer;
+static GBitmap *s_background_bitmap, *s_bt_icon_bitmap;
 static int s_battery_level;
 static Layer *s_battery_layer;
 
@@ -59,6 +59,16 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   }
 }
 
+static void bluetooth_callback(bool connected) {
+  // Show icon if disconnected
+  layer_set_hidden(bitmap_layer_get_layer(s_bt_icon_layer), connected);
+
+  if(!connected) {
+    // Issue a vibrating alert
+    vibes_double_pulse();
+  }
+}
+
 static void main_window_load(Window *window) {
   printf("main_window_load function");
   //Create GBitmap, then set to created BitmapLayer
@@ -96,11 +106,21 @@ static void main_window_load(Window *window) {
   s_date_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_15));
   text_layer_set_font(s_date_layer, s_date_font);
 
-
+  
+  // Create the Bluetooth icon GBitmap
+  s_bt_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BT_ICON);
+  // Create the BitmapLayer to display the GBitmap
+  s_bt_icon_layer = bitmap_layer_create(GRect(59, 12, 30, 30));
+  bitmap_layer_set_bitmap(s_bt_icon_layer, s_bt_icon_bitmap);
+  
+  // Show the correct state of the BT connection from the start
+  bluetooth_callback(connection_service_peek_pebble_app_connection());
+  
   // Add it as a child layer to the Window's root layer
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_date_layer));
+  layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_bt_icon_layer));
   
   // Create battery meter Layer
   s_battery_layer = layer_create(GRect(14, 54, 115, 2));
@@ -125,8 +145,10 @@ static void main_window_unload(Window *window) {
   text_layer_destroy(s_date_layer);
   // Destroy GBitmap
   gbitmap_destroy(s_background_bitmap);
+  gbitmap_destroy(s_bt_icon_bitmap);
   // Destroy BitmapLayer
   bitmap_layer_destroy(s_background_layer);
+  bitmap_layer_destroy(s_bt_icon_layer);
   //Destroy battery layer
   layer_destroy(s_battery_layer);
 }
@@ -230,6 +252,13 @@ static void init() {
   // Open AppMessage
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     
+  
+  // Subscribe to Bluetooth events
+  connection_service_subscribe((ConnectionHandlers) {
+    .pebble_app_connection_handler = bluetooth_callback
+  });
+
+  
   // Make sure the time is displayed from the start
   update_time();
 }
